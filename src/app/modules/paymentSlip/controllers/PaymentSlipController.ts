@@ -1,16 +1,13 @@
 import { NextFunction, Request, Response } from 'express';
 
-import GeneratePaymentSlipAmountService from '../services/GeneratePaymentSlipAmountService';
-import GeneratePaymentSlipBarCodeService from '../services/GeneratePaymentSlipBarCodeService';
-import GerenateExpirationDateService from '../services/GerenateExpirationDateService';
+import GeneratePaymentSlipService from '../services/GeneratePaymentSlipService';
 
 class PaymentSlipController {
   read(req: Request, res: Response, _next: NextFunction) {
     const { digitalLine } = req.params;
 
-    const barCode = GeneratePaymentSlipBarCodeService.execute(digitalLine);
-    const amount = GeneratePaymentSlipAmountService.execute(digitalLine);
-    const expirationDate = GerenateExpirationDateService.execute(digitalLine);
+    const { barCode, amount, expirationDate } =
+      GeneratePaymentSlipService.execute(digitalLine);
 
     res.status(200).json({
       barCode,

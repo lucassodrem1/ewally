@@ -13,8 +13,9 @@ class ErrorHandler {
     error.statusCode = error.statusCode ? error.statusCode : 500;
     error.status = error.status ? error.status : 'error';
 
-    // if (process.env.NODE_ENV === 'dev') return this.sendDevError(error, res);
-    return this.sendDevError(error, res);
+    if (process.env.NODE_ENV === 'dev') return this.sendDevError(error, res);
+
+    return this.sendProdError(error, res);
   }
 
   private sendDevError(err: IAppError, res: Response) {
@@ -23,6 +24,20 @@ class ErrorHandler {
       message: err.message,
       stack: err.stack,
       err,
+    });
+  }
+
+  private sendProdError(err: IAppError, res: Response) {
+    if (err.isOperational) {
+      return res.status(err.statusCode || 500).json({
+        status: err.status,
+        message: err.message,
+      });
+    }
+
+    return res.status(err.statusCode || 500).json({
+      status: err.status,
+      message: 'Internal server error.',
     });
   }
 }
